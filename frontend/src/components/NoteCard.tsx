@@ -4,22 +4,36 @@ import { formatDate } from "../lib/utils";
 import api from "../lib/axios";
 import toast from "react-hot-toast";
 
-import { useState } from "react";
+import React, { useState } from "react";
 
-const NoteCard = ({ note, setNotes }) => {
-  const [isChecked, setIsChecked] = useState(false);
-  const handleDelete = async (e, id) => {
+type Note = {
+  _id: string;
+  name: string;
+  content: string;
+  bought: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type NoteCardProps = {
+  note: Note;
+  setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
+};
+
+const NoteCard: React.FC<NoteCardProps> = ({ note, setNotes }) => {
+  const [isChecked, setIsChecked] = useState(note.bought);
+  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
     e.preventDefault(); // get rid of the navigation behaviour
 
-    if (!window.confirm("Are you sure you want to delete this note?")) return;
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
       await api.delete(`/notes/${id}`);
       setNotes((prev) => prev.filter((note) => note._id !== id)); // get rid of the deleted one
-      toast.success("Note deleted successfully");
+      toast.success("Item deleted successfully");
     } catch (error) {
       console.log("Error in handleDelete", error);
-      toast.error("Failed to delete note");
+      toast.error("Failed to delete item");
     }
   };
 
@@ -33,9 +47,20 @@ const NoteCard = ({ note, setNotes }) => {
           <div className="flex items-center gap-1">
             <button
               className={`btn btn-ghost btn-xs ${isChecked ? "text-success" : ""}`}
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
-                setIsChecked((v) => !v);
+                const newChecked = !isChecked;
+                setIsChecked(newChecked);
+                try {
+                  await api.put(`/notes/${note._id}`, {
+                    ...note,
+                    bought: newChecked,
+                  });
+                  setNotes((prev) => prev.map((n) => (n._id === note._id ? { ...n, bought: newChecked } : n)));
+                } catch {
+                  toast.error("Failed to update item");
+                  setIsChecked(!newChecked); // rollback on error
+                }
               }}
               title="Check note"
             >

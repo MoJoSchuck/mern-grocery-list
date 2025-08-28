@@ -27,18 +27,18 @@ const CreatePage = () => {
         content,
       });
 
-      toast.success("Note created successfully!");
+      toast.success("Item created successfully!");
       navigate("/");
     } catch (error) {
-      console.log("Error creating note", error);
+      console.log("Error creating item", error);
       const axiosError = error as AxiosError;
       if (axiosError.response?.status === 429) {
-        toast.error("Slow down! You're creating notes too fast", {
+        toast.error("Slow down! You're creating items too fast", {
           duration: 4000,
           icon: "💀",
         });
       } else {
-        toast.error("Failed to create note");
+        toast.error("Failed to create item");
       }
     } finally {
       setLoading(false);
