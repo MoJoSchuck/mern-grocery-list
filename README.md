@@ -1,6 +1,6 @@
 # 🥑 MERN Grocery List
 
-A modern full-stack note-taking app built with the MERN stack (MongoDB, Express, React, Node.js).  
+A modern full-stack app built with the MERN stack (MongoDB, Express, React, Node.js).  
 Create, update, and delete personal items in a clean and responsive UI.
 
 ---
